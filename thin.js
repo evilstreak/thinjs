@@ -1,7 +1,9 @@
 // Thin JS. (C) 2009 Dominic Baggott. Released under MIT license
 (function() {
   var doc = document,
-  w3c = !!doc.addEventListener,
+  addEventListener = "addEventListener",
+  w3c = !!doc[ addEventListener ],
+  querySelectorAll = "querySelectorAll",
 
   getTarget = function( event ) {
     event = event || window.event;
@@ -10,7 +12,7 @@
 
   addEvent = function( element, event, fn ) {
     w3c
-      ? element.addEventListener( event, fn, false )
+      ? element[ addEventListener ]( event, fn, false )
       : element.attachEvent( 'on' + event, function( e ) { fn.call( getTarget( e ), e ); } );
   },
 
@@ -23,7 +25,7 @@
    **/
   Thin = function( selector ) {
     // use an empty array to fail silently in unsupported browsers
-    var elements = doc.querySelectorAll ? doc.querySelectorAll( selector ) : [];
+    var elements = doc[ querySelectorAll ] ? doc[ querySelectorAll ]( selector ) : [];
 
     /**
      *  bind( event, fn )
@@ -32,6 +34,27 @@
      **/
     elements.bind = function( event, fn ) {
       for ( var i = 0; i < elements.length; i++ ) addEvent( elements[ i ], event, fn );
+    };
+
+    /**
+     *  live( event, fn )
+     *  - event (String): the name of the event, e.g. click, hover
+     *  - fn (Function): the function to call when the event triggers
+     **/
+    elements.live = function( event, fn ) {
+      addEvent( doc, event, function( e ) {
+        var target = getTarget( e ),
+            matches = target.parentNode[ querySelectorAll ]( selector ),
+            length = matches.length,
+            i = 0;
+
+        for ( ; i < length; i++ ) {
+          if ( matches[ i ] === target ) {
+            fn.call( target, e );
+            return;
+          }
+        }
+      } );
     };
 
     /**
@@ -45,7 +68,7 @@
     return elements;
   },
 
-  // holds references too all the functions to call on DOMReady
+  // holds references to all the functions to call on DOMReady
   readyFunctions = [],
 
   // this is fired on DOMReady to call all the queued functions
@@ -68,7 +91,7 @@
 
   // set up doReady to fire on DOMReady
   if ( w3c )
-    doc.addEventListener( "DOMContentLoaded", doReady, false );
+    addEvent( doc, "DOMContentLoaded", doReady );
   else if ( doc.documentElement.doScroll )
     ( function() {
       try {
