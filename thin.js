@@ -26,14 +26,29 @@
 
   /**
    *  $( selector )
-   *  - selector (String): selector to use to find elements
+   *  - selector (String|Node|NodeList): selector to use to find elements
    *
    *  Browsers which don't support document.querySelectorAll will always
    *  return an empty list.
    **/
   Thin = function( selector ) {
     // use an empty array to fail silently in unsupported browsers
-    var elements = doc[ querySelectorAll ] ? doc[ querySelectorAll ]( selector ) : [];
+    var elements = [];
+
+    // a string is a selector
+    if ( typeof selector === "string" ) {
+      if ( doc[ querySelectorAll ] ) {
+        elements = doc[ querySelectorAll ]( selector );
+      }
+    }
+    // allows wrapping of single nodes
+    else if ( selector.nodeType ) {
+      elements = [ selector ];
+    }
+    // allows wrapping of NodeLists (including those returned by Thin)
+    else if ( selector.length ) {
+      elements = selector;
+    }
 
     /**
      *  bind( event, fn )
