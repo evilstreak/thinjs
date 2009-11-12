@@ -51,12 +51,24 @@
     }
 
     /**
+     *  each( fn )
+     *  - fn (Function): the function to call for each element
+     **/
+    elements.each = function( fn ) {
+      for ( var i = 0; i < elements.length; i++ ) {
+        fn.call( elements[ i ], i );
+      }
+    };
+
+    /**
      *  bind( event, fn )
      *  - event (String): the name of the event, e.g. click, hover
      *  - fn (Function): the function to call when the event triggers
      **/
     elements.bind = function( event, fn ) {
-      for ( var i = 0; i < elements.length; i++ ) addEvent( elements[ i ], event, fn );
+      elements.each( function() {
+        addEvent( this, event, fn );
+      } );
     };
 
     /**
@@ -78,14 +90,6 @@
           }
         }
       } );
-    };
-
-    /**
-     *  each( fn )
-     *  - fn (Function): the function to call for each element
-     **/
-    elements.each = function( fn ) {
-      for ( var i = 0; i < elements.length; i++ ) fn.call( elements[ i ], i );
     };
 
     return elements;
