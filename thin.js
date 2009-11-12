@@ -58,6 +58,9 @@
       for ( var i = 0; i < elements.length; i++ ) {
         fn.call( elements[ i ], i );
       }
+
+      // return elements to allow chaining
+      return elements;
     };
 
     /**
@@ -66,7 +69,7 @@
      *  - fn (Function): the function to call when the event triggers
      **/
     elements.bind = function( event, fn ) {
-      elements.each( function() {
+      return elements.each( function() {
         addEvent( this, event, fn );
       } );
     };
@@ -90,6 +93,9 @@
           }
         }
       } );
+
+      // return elements to allow chaining
+      return elements;
     };
 
     return elements;
