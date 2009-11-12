@@ -1,19 +1,27 @@
 // Thin JS. (C) 2009 Dominic Baggott. Released under MIT license
 (function() {
+  // help the minifier crush the code
   var doc = document,
   addEventListener = "addEventListener",
-  w3c = !!doc[ addEventListener ],
   querySelectorAll = "querySelectorAll",
+  w3c = !!doc[ addEventListener ],
 
+  // get the target of an event
   getTarget = function( event ) {
     event = event || window.event;
     return event.target || event.srcElement;
   },
 
+  // add an event handler to an element
   addEvent = function( element, event, fn ) {
-    w3c
-      ? element[ addEventListener ]( event, fn, false )
-      : element.attachEvent( 'on' + event, function( e ) { fn.call( getTarget( e ), e ); } );
+    if ( w3c ) {
+      element[ addEventListener ]( event, fn, false );
+    }
+    else {
+      element.attachEvent( 'on' + event, function( e ) {
+        fn.call( getTarget( e ), e );
+      } );
+    }
   },
 
   /**
@@ -73,7 +81,10 @@
 
   // this is fired on DOMReady to call all the queued functions
   doReady = function() {
-    while ( readyFunctions.length ) readyFunctions.shift()();
+    while ( readyFunctions.length ) {
+      // we use shift to make sure the functions only get called once
+      readyFunctions.shift()();
+    }
   };
 
   /**
@@ -90,9 +101,11 @@
   };
 
   // set up doReady to fire on DOMReady
-  if ( w3c )
+  if ( w3c ) {
     addEvent( doc, "DOMContentLoaded", doReady );
-  else if ( doc.documentElement.doScroll )
+  }
+  else if ( doc.documentElement.doScroll ) {
+    // anonymous self-executing repeater which stops after calling doReady
     ( function() {
       try {
         doc.documentElement.doScroll( "left" );
@@ -102,6 +115,7 @@
         setTimeout( arguments.callee, 0 );
       }
     } )();
+  }
 
   // fire doReady on window load, just as a backup
   addEvent( window, "load", doReady );
