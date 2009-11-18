@@ -125,11 +125,14 @@
     }
   };
 
-  // set up doReady to fire on DOMReady
+  // set up doReady to fire on DOMReady the "official" way
   if ( w3c ) {
     addEvent( doc, "DOMContentLoaded", doReady );
   }
-  else if ( doc.documentElement.doScroll ) {
+
+  // IE doesn't support DOMContentLoaded so we use this which fires earlier
+  // than window.onload: http://javascript.nwbox.com/IEContentLoaded/
+  if ( doc.documentElement.doScroll ) {
     // anonymous self-executing repeater which stops after calling doReady
     ( function() {
       try {
