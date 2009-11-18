@@ -5,7 +5,7 @@ Thin JS - Super lightweight javascript library
 
 Thin JS is intentionally lightweight (**under 1KB** after minification in
 fact). It lacks features because it's meant for use where you want to add a
-little javascript to a site but not enough to include the 56k that [jQuery]
+little javascript to a site but not enough to include the 56k that [jQuery][]
 weighs after minification. If you're doing enough stuff that the features of
 Thin JS don't cut it for you then just man up and use a full library.
 
@@ -32,6 +32,15 @@ Bind events using `$().bind` by passing the event type to bind to and the
 function to be bound.
 
     $( "h2" ).bind( "click", function() {
+      this.style.color = "#d11";
+    } );
+
+## Event delegation
+
+Delegate events using `$().live` by passing the event type to bind to and the
+function to be bound.
+
+    $( "h2" ).live( "click", function() {
       this.style.color = "#d11";
     } );
 
